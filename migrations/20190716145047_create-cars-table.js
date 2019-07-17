@@ -6,8 +6,9 @@ exports.up = function(knex) {
   
       // other columns
       tbl.integer('VIN')
-        .unique()
         .notNullable();
+    
+      tbl.unique('VIN')
       tbl.string('make', 128)
       .notNullable();
       tbl.string('model', 128)

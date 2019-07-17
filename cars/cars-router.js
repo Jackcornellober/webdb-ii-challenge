@@ -7,7 +7,11 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
       const cars = await db('cars');
-      res.json(cars);
+      if(cars.length) {
+          res.json(cars);
+      } else {
+          res.status(400).json({ error: "There are no cars in the database"})
+      }
     } catch (err) {
       res.status(500).json({ message: 'Failed to retrieve cars' });
     }
@@ -18,7 +22,11 @@ router.get('/', async (req, res) => {
       const { id } = req.params;
       const car = await db('cars').where({ id });
   
-      res.json(car);
+      if(car.length) {
+        res.json(car);
+    } else {
+        res.status(400).json({ error: "There is no car with that ID in the database"})
+    }
     } catch (err) {
       res.status(500).json({ message: 'Failed to retrieve car' });
     }
@@ -29,8 +37,17 @@ router.get('/', async (req, res) => {
       const carData = req.body;
       const [id] = await db('cars').insert(carData);
       const newCarEntry = await db('cars').where({ id });
-  
-      res.status(201).json(newCarEntry);
+      if ( 
+        carData.vin
+        && carData.make
+        && carData.model
+        && carData.name
+        && carData.mileage ) {
+            res.status(201).json(newCarEntry); 
+        } else {
+            res.status(400).json({ error: "You're missing data from a required field"})
+        }
+
     } catch (err) {
       console.log('POST error', err);
       res.status(500).json({ message: 'Failed to store data' });
