@@ -43,7 +43,12 @@ router.get('/', async (req, res) => {
         && carData.model
         && carData.name
         && carData.mileage ) {
-            res.status(201).json(newCarEntry); 
+            const alreadyExisting = await db('cars').where({name: carData.name});
+            if (alreadyExisting.length == 0) {
+                res.status(201).json(newCarEntry);
+            } else {
+                res.status(400).json({error: "A car with that name already exists"})
+            }
         } else {
             res.status(400).json({ error: "You're missing data from a required field"})
         }
